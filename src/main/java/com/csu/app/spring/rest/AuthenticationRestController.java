@@ -34,10 +34,29 @@ public class AuthenticationRestController {
         this.userService = userService;
     }
 
+    @PostMapping("register")
+    public ResponseEntity register(@RequestBody AuthenticationRequestDto requestDto) {
+
+        System.out.println("Register");
+
+        String username = requestDto.getUsername();
+        String password = requestDto.getPassword();
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+
+        userService.register(user);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("login")
     public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
 
         try {
+
+            System.out.println("Authorization");
 
             String username = requestDto.getUsername();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, requestDto.getPassword()));

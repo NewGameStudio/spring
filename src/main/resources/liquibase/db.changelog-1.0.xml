@@ -76,6 +76,8 @@
                 <constraints nullable="false" unique="true"/>
             </column>
 
+            <column name="price" type="INT"/>
+
             <column name="description" type="VARCHAR(255)"/>
 
         </createTable>
@@ -108,6 +110,37 @@
                 referencedTableName="products"
                 referencedColumnNames="id"
                 constraintName="fk_user_product_product"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"/>
+    </changeSet>
+
+    <changeSet id="1.0.9" author="me">
+        <createTable tableName="user_purchased_products">
+
+            <column name="user_id" type="BIGINT"/>
+            <column name="product_id" type="BIGINT"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.10" author="me">
+        <addForeignKeyConstraint
+                baseTableName="user_purchased_products"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_user_purchased_products_user"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"/>
+    </changeSet>
+
+    <changeSet id="1.0.11" author="me">
+        <addForeignKeyConstraint
+                baseTableName="user_products"
+                baseColumnNames="product_id"
+                referencedTableName="products"
+                referencedColumnNames="id"
+                constraintName="fk_user_purchased_products_product"
                 onDelete="CASCADE"
                 onUpdate="RESTRICT"/>
     </changeSet>

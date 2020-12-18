@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -20,6 +21,18 @@ public class User extends BaseEntity {
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_products",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")})
+    private List<Product> products;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_purchased_products",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")})
+    private List<Product> purchasedProducts;
 
 
     public String getUsername() {
@@ -44,5 +57,21 @@ public class User extends BaseEntity {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public List<Product> getPurchasedProducts() {
+        return purchasedProducts;
+    }
+
+    public void setPurchasedProducts(List<Product> purchasedProducts) {
+        this.purchasedProducts = purchasedProducts;
     }
 }

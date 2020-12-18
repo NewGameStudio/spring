@@ -13,7 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String LOGIN_ENDPOINT = "/api/auth/login";
+    private static final String LOGIN_ENDPOINT = "/api/auth/*";
+    private static final String PRODUCTS_ENDPOINT = "/api/products/*";
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(LOGIN_ENDPOINT).permitAll()
+                .antMatchers(PRODUCTS_ENDPOINT).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
