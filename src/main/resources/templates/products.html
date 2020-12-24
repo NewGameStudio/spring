@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Продукты</title>
+    </head>
+    <body>
+        <input type="button" onclick="logout()" value="Выйти"/><br/><br/>
+        <input type="button" value="Корзина"/><br/><br/>
+
+        <table id="products_list" style="width:50%">
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Цена</th>
+            </tr>
+        </table>
+
+        <script>
+            function get_cookie ( cookie_name )
+            {
+                var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
+
+                if ( results )
+                    return ( unescape ( results[2] ) );
+                else
+                    return null;
+            }
+
+            function delete_cookie ( cookie_name )
+            {
+                var cookie_date = new Date ( );  // Текущая дата и время
+                cookie_date.setTime ( cookie_date.getTime() - 1 );
+                document.cookie = cookie_name += "=; expires=" + cookie_date.toGMTString();
+            }
+
+            function logout() {
+                delete_cookie("token");
+                document.location.href = "/";
+            }
+
+            function onClickToCartBtn() {
+                var idx = this.name;
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('get', '/api/user/products/add?id=1', true);
+                xhr.setRequestHeader('Authorization', get_cookie("token"));
+                xhr.send();
+
+                xhr
+            }
+
+            function loadProducts() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('get', '/api/products/all', true);
+                xhr.send();
+
+                xhr.onload = function() {
+                    if(xhr.status == 200) {
+                        var jsonResponse = JSON.parse(this.responseText);
+
+                        table = document.getElementById("products_list");
+                        for(var idx in jsonResponse) {
+                            var product = jsonResponse[idx];
+
+                            var row = document.createElement("tr")
+                            table.appendChild(row);
+
+                            var nameColumn = document.createElement("td");
+                            nameColumn.innerHTML = product["name"];
+
+                            var descColumn = document.createElement("td");
+                            descColumn.innerHTML = product["description"];
+
+                            var priceColumn = document.createElement("td");
+                            priceColumn.innerHTML = product["price"];
+
+                            var button = document.createElement('input');
+                            button.name = idx;
+                            button.value = "В корзину"
+                            button.type = "button"
+                            button.addEventListener('click', onClickToCartBtn);
+
+                            row.appendChild(nameColumn);
+                            row.appendChild(descColumn);
+                            row.appendChild(priceColumn);
+                            row.appendChild(button);
+                        }
+                    } else {
+                        logout();
+                    }
+                }
+            }
+
+            if(get_cookie("token") == null)
+                document.location.href = "/";
+            else
+                loadProducts();
+
+        </script>
+    </body>
+</html>
