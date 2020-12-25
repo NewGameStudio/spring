@@ -1,0 +1,20 @@
+version: '3'
+services:
+  docker-mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=spring_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    ports:
+      - 3307:3306
+
+  app:
+    image: shop-app:latest
+    ports:
+      - 1488:1488
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/spring_db?serverTimezone=UTC
+    depends_on:
+      - docker-mysql

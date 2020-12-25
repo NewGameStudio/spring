@@ -46,6 +46,25 @@ class ApplicationTests {
 		return objectMapper.readValue(json, clazz);
 	}
 
+	protected String login(AuthenticationRequestDto dto) throws Exception {
+		String json_string = mapToJson(dto);
+		MvcResult mvcResult = mockMvc
+				.perform(MockMvcRequestBuilders.post("/api/auth/login")
+						.contentType(APPLICATION_JSON)
+						.content(json_string))
+				.andReturn();
+
+		int status = mvcResult.getResponse().getStatus();
+		assertEquals(200, status);
+
+		if(status == 200) {
+			return new JSONObject(mvcResult.getResponse().getContentAsString())
+					.getString("token");
+		}
+
+		return null;
+	}
+
 
 	@Test
 	public void getProductsList() throws Exception {
@@ -62,29 +81,13 @@ class ApplicationTests {
 	}
 
 	@Test
-	public String loginWithCorrectData() throws Exception {
-		String uri = "/api/auth/login";
+	public void loginWithCorrectData() throws Exception {
 
 		AuthenticationRequestDto dto = new AuthenticationRequestDto();
 		dto.setUsername("test2");
 		dto.setPassword("test2");
 
-		String json_string = mapToJson(dto);
-		MvcResult mvcResult = mockMvc
-				.perform(MockMvcRequestBuilders.post(uri)
-						.contentType(APPLICATION_JSON)
-						.content(json_string))
-				.andReturn();
-
-		int status = mvcResult.getResponse().getStatus();
-		assertEquals(200, status);
-
-		if(status == 200) {
-			return new JSONObject(mvcResult.getResponse().getContentAsString())
-					.getString("token");
-		}
-
-		return null;
+		login(dto);
 	}
 
 	@Test
@@ -108,7 +111,12 @@ class ApplicationTests {
 
 	@Test
 	public void loginAndGetUserProducts() throws Exception {
-		String token = loginWithCorrectData();
+
+		AuthenticationRequestDto dto = new AuthenticationRequestDto();
+		dto.setUsername("test2");
+		dto.setPassword("test2");
+
+		String token = login(dto);
 
 		MvcResult mvcResult = mockMvc
 				.perform(MockMvcRequestBuilders.get("/api/user/products")
