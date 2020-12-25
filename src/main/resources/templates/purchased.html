@@ -2,11 +2,11 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Продукты</title>
+        <title>Title</title>
     </head>
     <body>
         <input type="button" onclick="logout()" value="Выйти"/><br/><br/>
-        <input type="button" onclick="toCart()" value="Корзина"/><br/><br/>
+        <input type="button" onclick="toCart()" value="В корзину"/><br/><br/>
 
         <table id="products_list" style="width:50%">
             <tr>
@@ -40,29 +40,13 @@
             }
 
             function toCart() {
-                document.location.href = "/user_cart";
-            }
-
-            function onClickToCartBtn() {
-                var id = this.name;
-                var xhr = new XMLHttpRequest();
-                var id = this.name.toString();
-
-                xhr.open('get', "/api/user/products/add?id=" + id, true);
-                xhr.setRequestHeader('Authorization', get_cookie("token"));
-                xhr.send();
-
-                xhr.onload = function() {
-                    if(xhr.status == 200)
-                        alert("Добавлено");
-                    else
-                        logout();
-                }
+                document.location.href = "user_cart";
             }
 
             function loadProducts() {
                 var xhr = new XMLHttpRequest();
-                xhr.open('get', '/api/products/all', true);
+                xhr.open('get', '/api/user/purchased', true);
+                xhr.setRequestHeader('Authorization', get_cookie("token"));
                 xhr.send();
 
                 xhr.onload = function() {
@@ -85,25 +69,18 @@
                             var priceColumn = document.createElement("td");
                             priceColumn.innerHTML = product["price"];
 
-                            var button = document.createElement('input');
-                            button.name = product["id"];
-                            button.value = "В корзину"
-                            button.type = "button"
-                            button.addEventListener('click', onClickToCartBtn);
-
                             row.appendChild(nameColumn);
                             row.appendChild(descColumn);
                             row.appendChild(priceColumn);
-                            row.appendChild(button);
                         }
                     } else {
-                        logout();
+                        alert("Ошибка : " + xhr.status);
                     }
                 }
             }
 
             if(get_cookie("token") == null)
-                document.location.href = "/";
+                logout();
             else
                 loadProducts();
 

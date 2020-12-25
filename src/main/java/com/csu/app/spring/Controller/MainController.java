@@ -20,4 +20,14 @@ public class MainController {
     public String products() {
         return "products";
     }
+
+    @GetMapping("/user_cart")
+    public String cart() {
+        return "user_cart";
+    }
+
+    @GetMapping("/purchased")
+    public String purchased() {
+        return "purchased";
+    }
 }

@@ -2,11 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Продукты</title>
+        <title>Cart</title>
     </head>
     <body>
         <input type="button" onclick="logout()" value="Выйти"/><br/><br/>
-        <input type="button" onclick="toCart()" value="Корзина"/><br/><br/>
+        <input type="button" onClick="toProducts()" value="Список товаров"/><br/><br/>
+        <input type="button" onclick="toPurchased()" value="Купленное"/><br/><br/>
 
         <table id="products_list" style="width:50%">
             <tr>
@@ -34,35 +35,55 @@
                 document.cookie = cookie_name += "=; expires=" + cookie_date.toGMTString();
             }
 
+            function toProducts() {
+                document.location.href = "/products";
+            }
+
+            function toPurchased() {
+                document.location.href = "/purchased"
+            }
+
             function logout() {
                 delete_cookie("token");
                 document.location.href = "/";
             }
 
-            function toCart() {
-                document.location.href = "/user_cart";
-            }
-
-            function onClickToCartBtn() {
-                var id = this.name;
-                var xhr = new XMLHttpRequest();
+            function onClickPurchaseBtn() {
                 var id = this.name.toString();
+                var xhr = new XMLHttpRequest();
 
-                xhr.open('get', "/api/user/products/add?id=" + id, true);
+                xhr.open('get', '/api/user/products/purchase?id=' + id, true);
                 xhr.setRequestHeader('Authorization', get_cookie("token"));
                 xhr.send();
 
                 xhr.onload = function() {
                     if(xhr.status == 200)
-                        alert("Добавлено");
+                        location.reload();
                     else
-                        logout();
+                        alert(xhr.status);
+                }
+            }
+
+            function onClickDeleteBtn() {
+                var id = this.name.toString();
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('get', '/api/user/products/delete?id=' + id, true);
+                xhr.setRequestHeader('Authorization', get_cookie("token"));
+                xhr.send();
+
+                xhr.onload = function() {
+                    if(xhr.status == 200)
+                        location.reload();
+                    else
+                        alert(xhr.status);
                 }
             }
 
             function loadProducts() {
                 var xhr = new XMLHttpRequest();
-                xhr.open('get', '/api/products/all', true);
+                xhr.open('get', '/api/user/products', true);
+                xhr.setRequestHeader('Authorization', get_cookie("token"));
                 xhr.send();
 
                 xhr.onload = function() {
@@ -85,25 +106,32 @@
                             var priceColumn = document.createElement("td");
                             priceColumn.innerHTML = product["price"];
 
-                            var button = document.createElement('input');
-                            button.name = product["id"];
-                            button.value = "В корзину"
-                            button.type = "button"
-                            button.addEventListener('click', onClickToCartBtn);
+                            var purchaseBtn = document.createElement('input');
+                            purchaseBtn.name = product["id"];
+                            purchaseBtn.value = "Купить"
+                            purchaseBtn.type = "button"
+                            purchaseBtn.addEventListener('click', onClickPurchaseBtn);
+
+                            var deleteBtn = document.createElement('input');
+                            deleteBtn.name = product["id"];
+                            deleteBtn.value = "Удалить"
+                            deleteBtn.type = "button"
+                            deleteBtn.addEventListener('click', onClickDeleteBtn);
 
                             row.appendChild(nameColumn);
                             row.appendChild(descColumn);
                             row.appendChild(priceColumn);
-                            row.appendChild(button);
+                            row.appendChild(purchaseBtn);
+                            row.appendChild(deleteBtn);
                         }
                     } else {
-                        logout();
+                        alert("Ошибка : " + xhr.status);
                     }
                 }
             }
 
             if(get_cookie("token") == null)
-                document.location.href = "/";
+                logout();
             else
                 loadProducts();
 

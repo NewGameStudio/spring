@@ -5,6 +5,7 @@ import com.csu.app.spring.model.User;
 import com.csu.app.spring.security.jwt.JwtTokenProvider;
 import com.csu.app.spring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,7 +35,7 @@ public class AuthenticationRestController {
         this.userService = userService;
     }
 
-    @PostMapping("register")
+    @PostMapping(value = "register")
     public ResponseEntity register(@RequestBody AuthenticationRequestDto requestDto) {
 
         System.out.println("Register");
@@ -51,7 +52,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("login")
+    @PostMapping(value = "login")
     public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
 
         try {
